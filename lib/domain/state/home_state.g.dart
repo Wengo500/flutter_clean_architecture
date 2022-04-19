@@ -50,8 +50,8 @@ mixin _$HomeState on HomeStateBase, Store {
   @override
   String toString() {
     return '''
-day: ${day},
-isLoading: ${isLoading}
+      day: ${day},
+      isLoading: ${isLoading}
     ''';
   }
 }

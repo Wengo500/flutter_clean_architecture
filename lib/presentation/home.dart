@@ -81,14 +81,14 @@ class _HomeState extends State<Home> {
             child: CircularProgressIndicator(),
           );
         }
-        if (_homeState!.day == null) return Container();
+        if (_homeState!.day == null) return const Text('Nothing');
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Восход: ${_homeState!.day!.sunrise!.toLocal()}'),
             Text('Заход: ${_homeState!.day!.sunset!.toLocal()}'),
             Text('Полдень: ${_homeState!.day!.solarNoon!.toLocal()}'),
-            // Text('Продолжительность: ${Duration(seconds: _homeState.day.dayLength)}'),
+            Text('Продолжительность: ${Duration(seconds: _homeState!.day!.dayLength as int)}'),
           ],
         );
       },
@@ -96,7 +96,6 @@ class _HomeState extends State<Home> {
   }
 
   void _getDay() {
-    // здесь получаем данные
     final lat = double.tryParse(_latController.text);
     final lng = double.tryParse(_lngController.text);
     _homeState!.getDay(latitude: lat, longitude: lng);
