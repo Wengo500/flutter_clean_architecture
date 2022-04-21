@@ -9,13 +9,5 @@ class RepositoryModule {
   static DayRepository dayRepository() {
     return _dayRepository = _dayRepository
         ?? DayDataRepository(ApiModule.apiUtil());
-
   }
-  //   if (_dayRepository == null) {
-  //     _dayRepository = DayDataRepository(
-  //       ApiModule.apiUtil(),
-  //     );
-  //   }
-  //   return _dayRepository;
-  // }
 }

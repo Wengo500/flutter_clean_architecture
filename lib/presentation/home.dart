@@ -1,7 +1,11 @@
-import 'package:clean_architecture/domain/state/home_state.dart';
+import 'package:clean_architecture/domain/bloc/home_state/state.dart';
+import 'package:clean_architecture/domain/model/day.dart';
 import 'package:clean_architecture/internal/dependencies/home_module.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../domain/bloc/home_state/bloc.dart';
+import '../domain/bloc/home_state/event.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -12,7 +16,7 @@ class _HomeState extends State<Home> {
   final _latController = TextEditingController();
   final _lngController = TextEditingController();
 
-  HomeState? _homeState;
+  HomeStateBloc? _homeState;
 
   @override
   void initState() {
@@ -33,17 +37,17 @@ class _HomeState extends State<Home> {
   Widget _getBody() {
     return SafeArea(
       child: Padding(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _getRowInput(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             RaisedButton(
-              child: Text('Получить'),
+              child: const Text('Получить'),
               onPressed: _getDay,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _getDayInfo(),
           ],
         ),
@@ -57,16 +61,16 @@ class _HomeState extends State<Home> {
         Expanded(
           child: TextField(
             controller: _latController,
-            keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
-            decoration: InputDecoration(hintText: 'Широта'),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+            decoration: const InputDecoration(hintText: 'Широта'),
           ),
         ),
-        SizedBox(width: 20),
+         const SizedBox(width: 20),
         Expanded(
           child: TextField(
             controller: _lngController,
-            keyboardType: TextInputType.numberWithOptions(decimal: true, signed: true),
-            decoration: InputDecoration(hintText: 'Долгота'),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true, signed: true),
+            decoration: const InputDecoration(hintText: 'Долгота'),
           ),
         ),
       ],
@@ -74,30 +78,25 @@ class _HomeState extends State<Home> {
   }
 
   Widget _getDayInfo() {
-    return Observer(
-      builder: (_) {
-        if (_homeState!.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
-        if (_homeState!.day == null) return const Text('Nothing');
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('Восход: ${_homeState!.day!.sunrise!.toLocal()}'),
-            Text('Заход: ${_homeState!.day!.sunset!.toLocal()}'),
-            Text('Полдень: ${_homeState!.day!.solarNoon!.toLocal()}'),
-            Text('Продолжительность: ${Duration(seconds: _homeState!.day!.dayLength as int)}'),
-          ],
-        );
-      },
+    final state = context.watch<HomeStateBloc>().state;
+    if (state.day == null) return const Text('Nothing');
+    if (state is HomeStateLoadingState) return const CircularProgressIndicator();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Восход: ${state.day?.solarNoon.toLocal()}'),
+        Text('Заход: ${state.day?.sunset.toLocal()}'),
+        Text('Полдень: ${state.day?.solarNoon!.toLocal()}'),
+        Text('Продолжительность: ${Duration(seconds: state.day?.dayLength as int)}'),
+      ],
     );
   }
 
-  void _getDay() {
+  void _getDay() async {
+    final HomeStateBloc updateCoordinate = context.read<HomeStateBloc>();
     final lat = double.tryParse(_latController.text);
     final lng = double.tryParse(_lngController.text);
-    _homeState!.getDay(latitude: lat, longitude: lng);
+    final Day getDay = await _homeState!.getDay(latitude: lat, longitude: lng);
+    updateCoordinate.add(GetDayEvent(day: getDay));
   }
 }

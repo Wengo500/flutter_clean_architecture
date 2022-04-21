@@ -1,9 +1,9 @@
-import 'package:clean_architecture/domain/state/home_state.dart';
+import 'package:clean_architecture/domain/bloc/home_state/bloc.dart';
 import 'package:clean_architecture/internal/dependencies/repository_module.dart';
 
 class HomeModule {
-  static HomeState homeState() {
-    return HomeState(
+  static HomeStateBloc homeState() {
+    return HomeStateBloc(
       RepositoryModule.dayRepository(),
     );
   }
