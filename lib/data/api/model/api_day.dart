@@ -1,12 +1,16 @@
 
-class ApiDay {
-  final String sunrise;
-  final String sunset;
-  final String solarNoon;
-  final num dayLength;
-  ApiDay.fromApi(Map<String, dynamic> map)
-      : sunrise = map['results']['sunrise'],
-        sunset = map['results']['sunset'],
-        solarNoon = map['results']['solar_noon'],
-        dayLength = map['results']['day_length'];
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'api_day.freezed.dart';
+part 'api_day.g.dart';
+
+@freezed
+class ApiDay with _$ApiDay {
+  const factory ApiDay({
+    required String sunrise,
+    required String sunset,
+    required String solar_noon,
+    required num day_length,
+  }) = _Charcter;
+  factory ApiDay.fromJson(Map<String, dynamic> json) =>  _$ApiDayFromJson(json['results']);
 }

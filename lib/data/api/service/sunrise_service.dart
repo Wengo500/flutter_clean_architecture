@@ -5,7 +5,6 @@ import '../request/get_day_body.dart';
 
 class SunriseService {
   static const _BASE_URL = 'https://api.sunrise-sunset.org';
-
   final Dio _dio = Dio(
     BaseOptions(baseUrl: _BASE_URL),
   );
@@ -15,6 +14,7 @@ class SunriseService {
       '/json',
       queryParameters: body.toApi(),
     );
-    return ApiDay.fromApi(response.data);
+    // print(response.data);
+    return ApiDay.fromJson(response.data);
   }
 }
