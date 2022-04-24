@@ -1,15 +1,8 @@
-import 'package:clean_architecture/domain/model/day.dart';
+part of 'bloc.dart';
 
-abstract class HomeState {
-  @override
-  get day => null;
-}
-class HomeStateLoadingState extends HomeState {}
-
-class GetDayState extends HomeState {
-  @override
-  Day? day;
-
-  GetDayState({required this.day});
-  List<Day?> get props => [day];
+@freezed
+class GetDayState with _$GetDayState {
+  const factory GetDayState.initial() = Initial;
+  const factory GetDayState.loading() = Loading;
+  const factory GetDayState.loaded({day}) = Loaded;
 }

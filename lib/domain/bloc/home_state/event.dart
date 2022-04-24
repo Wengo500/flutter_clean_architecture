@@ -1,11 +1,9 @@
-import 'package:clean_architecture/domain/model/day.dart';
+part of 'bloc.dart';
 
-abstract class HomeEvent {
-  @override
-  List<Object> get props => [];
-}
-
-class GetDayEvent extends HomeEvent {
-  final Day? day;
-  GetDayEvent({required this.day});
+@freezed
+class GetDayEvent with _$GetDayEvent {
+  const factory GetDayEvent.fetch({
+   required double latitude,
+   required double longitude,
+  }) = GetDayEventFetch;
 }

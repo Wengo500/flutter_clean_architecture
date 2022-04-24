@@ -1,11 +1,9 @@
-import 'package:clean_architecture/domain/bloc/home_state/state.dart';
 import 'package:clean_architecture/domain/model/day.dart';
 import 'package:clean_architecture/internal/dependencies/home_module.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../domain/bloc/home_state/bloc.dart';
-import '../domain/bloc/home_state/event.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -79,16 +77,20 @@ class _HomeState extends State<Home> {
 
   Widget _getDayInfo() {
     final state = context.watch<HomeStateBloc>().state;
-    if (state.day == null) return const Text('Nothing');
-    if (state is HomeStateLoadingState) return const CircularProgressIndicator();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Восход: ${state.day?.solarNoon.toLocal()}'),
-        Text('Заход: ${state.day?.sunset.toLocal()}'),
-        Text('Полдень: ${state.day?.solarNoon!.toLocal()}'),
-        Text('Продолжительность: ${Duration(seconds: state.day?.dayLength as int)}'),
-      ],
+    return state.when(
+        initial: () => const Text('Nothing'),
+        loading: () => const Center(child: CircularProgressIndicator(strokeWidth: 3,)),
+        loaded: (day) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Восход: ${day.solarNoon.toLocal()}'),
+              Text('Заход: ${day.sunset.toLocal()}'),
+              Text('Полдень: ${day.solarNoon.toLocal()}'),
+              Text('Продолжительность: ${Duration(seconds: day.dayLength as int)}'),
+            ],
+          );
+        }
     );
   }
 
@@ -96,7 +98,6 @@ class _HomeState extends State<Home> {
     final HomeStateBloc updateCoordinate = context.read<HomeStateBloc>();
     final lat = double.tryParse(_latController.text);
     final lng = double.tryParse(_lngController.text);
-    final Day getDay = await _homeState!.getDay(latitude: lat, longitude: lng);
-    updateCoordinate.add(GetDayEvent(day: getDay));
+    updateCoordinate.add(GetDayEventFetch(latitude: lat as double, longitude: lng as double));
   }
 }
